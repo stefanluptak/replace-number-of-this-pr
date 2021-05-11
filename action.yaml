@@ -27,4 +27,4 @@ runs:
           hub issue update $pr_number -m "$body"
           echo "Updated successfully"
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
