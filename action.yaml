@@ -1,0 +1,30 @@
+name: "Replace <NUMBER_OF_THIS_PR> in PR body and text"
+description: "Replace <NUMBER_OF_THIS_PR> with an actual number of this PR in PR body and text"
+author: Štefan Ľupták
+branding:
+  icon: monitor
+  color: green
+inputs:
+  github_token:
+    description: "GitHub token"
+    required: false
+    default: ${{ github.token }}
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        echo "Starting"
+          echo "Retrieving PR number"
+          pr_number=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          echo "PR number is $pr_number"
+          echo "Retrieving title and a body of a PR"
+          body="$(hub pr show -f '%t%n%n%b' $pr_number)"
+          echo "Original title and a body: $body"
+          body="${body//<NUMBER_OF_THIS_PR>/$pr_number}"
+          echo "Updated title and a body: $body"
+          echo "Updating it on the GitHub"
+          hub issue update $pr_number -m "$body"
+          echo "Updated successfully"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
